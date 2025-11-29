@@ -8,5 +8,5 @@ git clone https://github.com/MACNEONTOP/macker.git
 
 ```bash 
 cd macker 
-sudo ./run.sh
+./run.sh
 ```
