@@ -8,5 +8,7 @@ git clone https://github.com/MACNEONTOP/macker.git
 
 ```bash 
 cd macker 
-./run.sh
+sudo ./run.sh
 ```
+
+open localhost:5601
