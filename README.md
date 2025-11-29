@@ -3,5 +3,10 @@
 Reference: https://github.com/deviantony/docker-elk.git 
 
 ```bash
-git clone -  
+git clone https://github.com/MACNEONTOP/macker.git  
+```
+
+```bash 
+cd macker 
+sudo ./run.sh
 ```
