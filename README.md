@@ -3,7 +3,7 @@
 본 프로젝트는 과학기술정보통신부가 지원하는 차세대보안리더양성과정(Best of the Best) 디지털포렌식 트랙에서 **막내온탑 팀**이 수행한 교육·연구 과제의 일환으로 진행되었습니다.
 
 이 리포지토리는 연구 및 학습 목적의 예제로, [MIT License](LICENSE) 하에 제공되며 사용에 따른 모든 책임은 사용자에게 있습니다.  
-(GitHub: <https://github.com/MACNEONTOP/macker>)
+(GitHub: <hhttps://github.com/deviantony/docker-elk)
 
 > ⚠️ `brew install docker` 방식으로 Docker를 설치할 경우, 환경에 따라 Docker Desktop과 충돌하거나 오류가 발생할 수 있습니다.  
 
