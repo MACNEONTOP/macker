@@ -1,0 +1,207 @@
+version: "3.8"
+
+services:
+
+  # --- 초기 유저/롤 셋업용 서비스 ---
+  setup:
+    profiles:
+      - setup
+    build:
+      context: setup/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
+    init: true
+    volumes:
+      - ./setup/entrypoint.sh:/entrypoint.sh:ro,Z
+      - ./setup/lib.sh:/lib.sh:ro,Z
+      - ./setup/roles:/roles:ro,Z
+      - ./setup/rules:/rules:ro,Z
+    environment:
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
+      LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
+      KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
+      METRICBEAT_INTERNAL_PASSWORD: ${METRICBEAT_INTERNAL_PASSWORD:-}
+      FILEBEAT_INTERNAL_PASSWORD: ${FILEBEAT_INTERNAL_PASSWORD:-}
+      HEARTBEAT_INTERNAL_PASSWORD: ${HEARTBEAT_INTERNAL_PASSWORD:-}
+      MONITORING_INTERNAL_PASSWORD: ${MONITORING_INTERNAL_PASSWORD:-}
+      BEATS_SYSTEM_PASSWORD: ${BEATS_SYSTEM_PASSWORD:-}
+    network_mode: service:elasticsearch
+    depends_on:
+      - elasticsearch
+      - kibana
+
+  # --- Kibana 암호화 키 생성용 ---
+  kibana-genkeys:
+    profiles:
+      - setup
+    build:
+      context: kibana/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
+    command:
+      - bin/kibana-encryption-keys
+      - generate
+    network_mode: none
+
+  # --- Elasticsearch ---
+  elasticsearch:
+    build:
+      context: elasticsearch/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
+    volumes:
+      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,Z
+      - elasticsearch:/usr/share/elasticsearch/data:Z
+    ports:
+      - 9200:9200
+      - 9300:9300
+    environment:
+      node.name: elasticsearch
+      ES_JAVA_OPTS: -Xms512m -Xmx512m
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
+      discovery.type: single-node
+
+      # 보안 설정 (기본 인증만 활성화, TLS 비활성화)
+      xpack.security.enabled: "true"
+      xpack.security.http.ssl.enabled: "false"
+      xpack.security.transport.ssl.enabled: "false"
+
+    networks:
+      - elk
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9200 >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 12
+    restart: unless-stopped
+
+  # --- Logstash ---
+  logstash:
+    build:
+      context: logstash/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
+    volumes:
+      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro,Z
+      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro,Z
+    ports:
+      - 5044:5044
+      - 50000:50000/tcp
+      - 50000:50000/udp
+      - 9600:9600
+    environment:
+      LS_JAVA_OPTS: -Xms256m -Xmx256m
+      LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
+    restart: unless-stopped
+
+  # --- Kibana ---
+  kibana:
+    build:
+      context: kibana/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
+    volumes:
+      - ./kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,Z
+    ports:
+      - 5601:5601
+    environment:
+      KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
+      XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY: "9d8f6c4a7b2e1903847c6a1f5e2b9d3f"
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
+    restart: unless-stopped
+
+  # --- 자동 Import (수정된 경로 및 로직 적용) ---
+  kibana-importer:
+    image: curlimages/curl:8.10.1
+    networks:
+      - elk
+    depends_on:
+      - kibana
+    volumes:
+      - ./setup/rules:/rules:ro
+      - ./setup/dataview:/dataview:ro
+      - ./setup/dashboard:/dashboard:ro
+    environment:
+      KIBANA_URL: http://kibana:5601
+      KIBANA_USER: elastic
+      KIBANA_PASSWORD: ${ELASTIC_PASSWORD:-}
+    command:
+      - /bin/sh
+      - -c
+      - |
+        echo "Waiting for Kibana..."
+
+        # Kibana 상태 대기
+        while true; do
+          STATUS=$$(curl -s -u "$$KIBANA_USER:$$KIBANA_PASSWORD" "$$KIBANA_URL/api/status" || true)
+
+          if printf '%s' "$$STATUS" | grep -q '"state":"green"' \
+             || printf '%s' "$$STATUS" | grep -q '"level":"available"'; then
+            echo "Kibana is ready."
+            break
+          fi
+
+          echo "  Kibana not ready yet..."
+          sleep 5
+        done
+
+        echo "------------------------------------------------"
+        echo "[DEBUG] Checking files..."
+        ls -R /rules /dataview /dashboard || echo "Check paths"
+
+        echo "------------------------------------------------"
+        echo "1. Importing Data Views..."
+        for f in /dataview/*.ndjson; do
+          [ -e "$$f" ] || continue
+          echo "  -> importing $$(basename "$$f")"
+          curl -s -u "$$KIBANA_USER:$$KIBANA_PASSWORD" \
+            -H "kbn-xsrf: true" \
+            -F "file=@$$f" \
+            "$$KIBANA_URL/api/saved_objects/_import?overwrite=true"
+        done
+
+        echo "------------------------------------------------"
+        echo "2. Importing Dashboards..."
+        for f in /dashboard/*.ndjson; do
+          [ -e "$$f" ] || continue
+          echo "  -> importing $$(basename "$$f")"
+          curl -s -u "$$KIBANA_USER:$$KIBANA_PASSWORD" \
+            -H "kbn-xsrf: true" \
+            -F "file=@$$f" \
+            "$$KIBANA_URL/api/saved_objects/_import?overwrite=true"
+        done
+
+        echo "------------------------------------------------"
+        echo "3. Importing Rules..."
+        echo "Initializing Detection Engine..."
+        curl -s -X POST -u "$$KIBANA_USER:$$KIBANA_PASSWORD" \
+          -H "kbn-xsrf: true" \
+          "$$KIBANA_URL/api/detection_engine/index" || true
+
+        for f in /rules/*.ndjson; do
+          [ -e "$$f" ] || continue
+          echo "  -> importing $$(basename "$$f")"
+          curl -s -u "$$KIBANA_USER:$$KIBANA_PASSWORD" \
+            -H "kbn-xsrf: true" \
+            -F "file=@$$f" \
+            "$$KIBANA_URL/api/detection_engine/rules/_import?overwrite=true"
+        done
+
+        echo "------------------------------------------------"
+        echo "Import finished."
+    restart: "no"
+
+
+networks:
+  elk:
+    driver: bridge
+
+volumes:
+  elasticsearch:
