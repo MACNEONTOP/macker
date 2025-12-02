@@ -3,7 +3,7 @@
 This project was carried out as part of an educational and research project conducted by the youngest on-top team at the digital forensics track of the next generation of security leaders (Best of the Best) supported by the KITRI(Korea Information Technology Research Institute).
 
 This repository is an example for research and study purposes, provided under the [MIT License](LICENSE), and the user bears all responsibility for its use.
-(GitHub: <hhttps://github.com/deviantony/docker-elk)
+(GitHub: <https://github.com/deviantony/docker-elk)
 
 > ⚠️ If you install Docker using `brew install docker`, conflicts with Docker Desktop or errors may occur depending on the environment. Please use the official Docker Desktop installer if possible.
 
