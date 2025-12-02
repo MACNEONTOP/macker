@@ -1,6 +1,6 @@
 # macOS AUL-based anomaly detection
 
-This project was conducted as part of the education/research assignment by the **MakneOnTop Team** in the Digital Forensic Track of the Best of the Best (BoB) program supported by the Ministry of Science and ICT.
+This project was carried out as part of an educational and research project conducted by the youngest on-top team at the digital forensics track of the next generation of security leaders (Best of the Best) supported by the KITRI(Korea Information Technology Research Institute).
 
 This repository is an example for research and study purposes, provided under the [MIT License](LICENSE), and the user bears all responsibility for its use.
 (GitHub: <hhttps://github.com/deviantony/docker-elk)
