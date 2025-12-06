@@ -121,6 +121,33 @@ done
 
 echo "[setup] Waiting for Kibana to become available..."
 
+# -------------------------------------------------------------
+# [추가] 런타임 필드 매핑 적용 (Threat Score)
+# -------------------------------------------------------------
+echo "[Setup] Applying Runtime Fields Mapping..."
+
+# 도커 내부이므로 elasticsearch 호스트명을 사용합니다.
+# 인증 정보는 이미 스크립트 내 변수($ELASTIC_PASSWORD)에 있을 확률이 높습니다.
+
+if [ -f "/mapping.json" ]; then
+  response=$(curl -s -o /dev/null -w "%{http_code}" -X PUT "http://elasticsearch:9200/.internal.alerts-security.alerts-default-*/_mapping" \
+    -u "elastic:${ELASTIC_PASSWORD}" \
+    -H "Content-Type: application/json" \
+    -d @/mapping.json)
+
+  if [ "$response" -eq 200 ]; then
+    echo "[Setup] Mapping applied successfully!"
+  else
+    echo "[Setup] Warning: Mapping failed with HTTP $response"
+    echo "        (It's okay if this is the first run and the index doesn't exist yet)"
+  fi
+else
+  echo "[Setup] Error: /mapping.json not found inside container."
+fi
+
+# -------------------------------------------------------------
+
+
 # KIBANA_URL="${KIBANA_URL:-http://kibana:5601}"
 
 # MAX_TRIES=60   # 60 * 5초 = 최대 5분 대기
