@@ -4,6 +4,10 @@
 
 ---
 
+## 사용 설명서 
+https://github.com/MACNEONTOP/macker/blob/main/macker%20%E1%84%89%E1%85%A1%E1%84%8B%E1%85%AD%E1%86%BC%E1%84%89%E1%85%A5%E1%86%AF%E1%84%86%E1%85%A7%E1%86%BC%E1%84%89%E1%85%A5.pdf
+---
+
 ## 📌 프로젝트 개요
 macOS의 AUL(Apple Unified Logging System)과 FSEvents 를 활용하여  
 랜섬웨어 / InfoStealer 등 이상행위를 탐지하는 모니터링 시스템입니다.
