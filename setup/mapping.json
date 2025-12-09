@@ -1,34 +1,34 @@
-{
-  "runtime": {
-    "threat_score_1": {
-      "type": "double",
-      "script": {
-        "source": "if (doc['kibana.alert.rule.tags'].size() > 0) { for (tag in doc['kibana.alert.rule.tags']) { if (tag.startsWith('threat_score_1:')) { emit(Double.parseDouble(tag.substring(15))) } } }"
-      }
-    },
-    "threat_score_1_risk_level": {
-      "type": "keyword",
-      "script": {
-        "source": "if (doc['kibana.alert.rule.tags'].size() > 0) { for (tag in doc['kibana.alert.rule.tags']) { if (tag.startsWith('threat_score_1_risk_level:')) { emit(tag.substring(26)) } } }"
-      }
-    },
-    "threat_score_2": {
-      "type": "double",
-      "script": {
-        "source": "if (doc['kibana.alert.rule.tags'].size() > 0) { for (tag in doc['kibana.alert.rule.tags']) { if (tag.startsWith('threat_score_2:')) { emit(Double.parseDouble(tag.substring(15))) } } }"
-      }
-    },
-    "final_risk_score": {
-      "type": "long",
-      "script": {
-        "source": "if (doc['kibana.alert.rule.tags'].size() > 0) { for (tag in doc['kibana.alert.rule.tags']) { if (tag.startsWith('final_risk_score:')) { emit(Long.parseLong(tag.substring(17))) } } }"
-      }
-    },
-    "threat_score_1_risk_level_numeric": {
-      "type": "long",
-      "script": {
-        "source": "if (doc['kibana.alert.rule.tags'].size() > 0) { for (tag in doc['kibana.alert.rule.tags']) { if (tag.startsWith('threat_score_1_risk_level:')) { String level = tag.substring(26); if (level.equals('CRITICAL')) emit(4); else if (level.equals('HIGH')) emit(3); else if (level.equals('MEDIUM')) emit(2); else if (level.equals('LOW')) emit(1); } } }"
+  {
+    "runtime": {
+      "threat_score_1": {
+        "type": "double",
+        "script": {
+          "source": "if (doc['kibana.alert.rule.tags'].size() > 0) { for (tag in doc['kibana.alert.rule.tags']) { if (tag.startsWith('threat_score_1:')) { emit(Double.parseDouble(tag.substring(15))) } } }"
+        }
+      },
+      "threat_score_1_risk_level": {
+        "type": "keyword",
+        "script": {
+          "source": "if (doc['kibana.alert.rule.tags'].size() > 0) { for (tag in doc['kibana.alert.rule.tags']) { if (tag.startsWith('threat_score_1_risk_level:')) { emit(tag.substring(26)) } } }"
+        }
+      },
+      "threat_score_2": {
+        "type": "double",
+        "script": {
+          "source": "if (doc['kibana.alert.rule.tags'].size() > 0) { for (tag in doc['kibana.alert.rule.tags']) { if (tag.startsWith('threat_score_2:')) { emit(Double.parseDouble(tag.substring(15))) } } }"
+        }
+      },
+      "final_risk_score": {
+        "type": "long",
+        "script": {
+          "source": "if (doc['kibana.alert.rule.tags'].size() > 0) { for (tag in doc['kibana.alert.rule.tags']) { if (tag.startsWith('final_risk_score:')) { emit(Long.parseLong(tag.substring(17))) } } }"
+        }
+      },
+      "threat_score_1_risk_level_numeric": {
+        "type": "long",
+        "script": {
+          "source": "if (doc['kibana.alert.rule.tags'].size() > 0) { for (tag in doc['kibana.alert.rule.tags']) { if (tag.startsWith('threat_score_1_risk_level:')) { String level = tag.substring(26); if (level.equals('CRITICAL')) emit(4); else if (level.equals('HIGH')) emit(3); else if (level.equals('MEDIUM')) emit(2); else if (level.equals('LOW')) emit(1); } } }"
+        }
       }
     }
   }
-}
