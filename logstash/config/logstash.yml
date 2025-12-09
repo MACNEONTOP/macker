@@ -5,3 +5,5 @@
 api.http.host: 0.0.0.0
 
 node.name: logstash
+
+queue.type: persisted
