@@ -46,8 +46,15 @@ PY_SCRIPT_SRC="${SRC_DIR}/fsevents_logger.py"
 # =========================================================
 # [추가됨] 0-5. Python 라이브러리 설치 (watchdog)
 # =========================================================
-echo "    - Python watchdog 라이브러리 설치 중..."
-python3 -m pip install watchdog || die "watchdog 라이브러리 설치 실패"
+echo "    - Python watchdog 라이브러리 설치 확인..."
+
+# > /dev/null 2>&1 : 확인 과정의 불필요한 출력 메시지를 숨김
+if python3 -m pip show watchdog > /dev/null 2>&1; then
+    echo "    - watchdog 라이브러리가 이미 설치되어 있습니다. (Skip)"
+else
+    echo "    - watchdog 미설치됨. 설치를 시작합니다..."
+    python3 -m pip install watchdog || die "watchdog 라이브러리 설치 실패"
+fi
 
 echo "[*] Step 1. Filebeat tarball 다운로드"
 cd "${ROOT_DIR}"

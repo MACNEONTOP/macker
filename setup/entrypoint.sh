@@ -122,30 +122,45 @@ done
 echo "[setup] Waiting for Kibana to become available..."
 
 # -------------------------------------------------------------
-# [추가] 런타임 필드 매핑 적용 (Threat Score)
+# [수정] 인덱스 생성 대기 및 매핑 적용 (성공할 때까지 반복)
 # -------------------------------------------------------------
-echo "[Setup] Applying Runtime Fields Mapping..."
+echo "[Setup] Starting Runtime Fields Mapping process..."
 
-# 도커 내부이므로 elasticsearch 호스트명을 사용합니다.
-# 인증 정보는 이미 스크립트 내 변수($ELASTIC_PASSWORD)에 있을 확률이 높습니다.
+# 1. 인덱스가 생길 때까지 무한 루프 (Kibana가 룰을 로드할 시간을 줌)
+while true; do
+  # 인덱스 존재 여부 확인 (HEAD 요청)
+  status_code=$(curl -s -o /dev/null -w "%{http_code}" -I -u "elastic:${ELASTIC_PASSWORD}" "http://elasticsearch:9200/.internal.alerts-security.alerts-default-*")
 
-if [ -f "/mapping.json" ]; then
-  response=$(curl -s -o /dev/null -w "%{http_code}" -X PUT "http://elasticsearch:9200/.internal.alerts-security.alerts-default-*/_mapping" \
-    -u "elastic:${ELASTIC_PASSWORD}" \
-    -H "Content-Type: application/json" \
-    -d @/mapping.json)
-
-  if [ "$response" -eq 200 ]; then
-    echo "[Setup] Mapping applied successfully!"
+  if [ "$status_code" -eq 200 ]; then
+    echo "[Setup] Target index found! Applying mapping..."
+    
+    # 2. 매핑 적용
+    if [ -f "/mapping.json" ]; then
+      response=$(curl -s -o /dev/null -w "%{http_code}" -X PUT "http://elasticsearch:9200/.internal.alerts-security.alerts-default-*/_mapping" \
+        -u "elastic:${ELASTIC_PASSWORD}" \
+        -H "Content-Type: application/json" \
+        -d @/mapping.json)
+      
+      if [ "$response" -eq 200 ]; then
+        echo "[Setup] SUCCESS: Mapping applied!"
+        break # 성공 시 루프 탈출
+      else
+        echo "[Setup] Mapping failed (HTTP $response). Retrying in 10s..."
+      fi
+    else
+      echo "[Setup] Error: /mapping.json missing."
+      exit 1
+    fi
   else
-    echo "[Setup] Warning: Mapping failed with HTTP $response"
-    echo "        (It's okay if this is the first run and the index doesn't exist yet)"
+    echo "[Setup] Index not created yet. Waiting 10s..."
   fi
-else
-  echo "[Setup] Error: /mapping.json not found inside container."
-fi
+  
+  sleep 10
+done
 
 # -------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------------------
+
 
 
 # KIBANA_URL="${KIBANA_URL:-http://kibana:5601}"
