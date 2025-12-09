@@ -2,11 +2,10 @@
 
 # AUL 기반 macOS 이상행위 탐지
 
----
-
-## 사용 설명서 
+--- 
 
 [사용 설명서 보기](https://github.com/MACNEONTOP/macker/blob/main/macker%20%E1%84%89%E1%85%A1%E1%84%8B%E1%85%AD%E1%86%BC%E1%84%89%E1%85%A5%E1%86%AF%E1%84%86%E1%85%A7%E1%86%BC%E1%84%89%E1%85%A5.pdf)
+
 ---
 
 ## 📌 프로젝트 개요
