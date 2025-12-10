@@ -33,7 +33,7 @@
       "host.hostname": {
         "type": "keyword",
         "script": {
-          "source": "String h_name = null; if (doc.containsKey('kibana.alert.threshold_result.terms.value') && doc['kibana.alert.threshold_result.terms.value'].size() >= 2) { h_name = doc['kibana.alert.threshold_result.terms.value'][1]; } if (h_name == null && doc.containsKey('agent.name.keyword') && !doc['agent.name.keyword'].empty) { h_name = doc['agent.name.keyword'].value; } if (h_name == null && doc.containsKey('host.hostname.keyword') && !doc['host.hostname.keyword'].empty) { h_name = doc['host.hostname.keyword'].value; } if (h_name == null && doc.containsKey('host.name.keyword') && !doc['host.name.keyword'].empty) { h_name = doc['host.name.keyword'].value; } if (h_name != null) { emit(h_name.toLowerCase()); }"
+          "source": "String h=null;if(doc.containsKey('kibana.alert.threshold_result.terms.value')&&!doc['kibana.alert.threshold_result.terms.value'].empty){h=doc['kibana.alert.threshold_result.terms.value'][0];}if(h==null&&doc.containsKey('host.name.keyword')&&!doc['host.name.keyword'].empty){h=doc['host.name.keyword'].value;}if(h==null&&doc.containsKey('host.hostname.keyword')&&!doc['host.hostname.keyword'].empty){h=doc['host.hostname.keyword'].value;}if(h==null&&doc.containsKey('agent.name.keyword')&&!doc['agent.name.keyword'].empty){h=doc['agent.name.keyword'].value;}if(h!=null){emit(h.toLowerCase());}"
         }
       }
     }
