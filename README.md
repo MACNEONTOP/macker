@@ -24,7 +24,6 @@ macOS의 AUL(Apple Unified Logging System)과 FSEvents 를 활용하여
 - [탐지 룰 작성](#탐지-룰-작성)
 - [이상 행위 탐지 방안](#이상-행위-탐지-방안)
 - [도구 구성](#도구-구성)
-- [Test Mal](#Test-Mal)
 
 ---
 
