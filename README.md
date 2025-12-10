@@ -359,7 +359,7 @@ sequence by host.name with maxspan=20m
 
 ---
 
-# [View User Manual](https://github.com/MACNEONTOP/macker/blob/main/Macker%20%EC%82%AC%EC%9A%A9%EC%84%A4%EB%AA%85%EC%84%9C.pdf)
+# [View User Manual](https://github.com/MACNEONTOP/macker/blob/main/Macker%20User's%20Guide.pdf)
 
 ---
 
