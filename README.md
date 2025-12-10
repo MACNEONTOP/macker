@@ -352,11 +352,3 @@ sequence by host.name with maxspan=20m
 > - 수집된 로그와 탐지 결과를 시각화
 > - 대시보드 제공
 
----
-
-## 3. Test Mal
-만들어진 도구 테스트를 위하여 컨트롤 가능한 테스트용 malware 두 종을 제공한다.
-- InfoStealer
-- Ransomeware
-
-이를 활용하여 도구를 테스트할 수 있다.
