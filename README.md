@@ -28,7 +28,7 @@ macOS의 AUL(Apple Unified Logging System)과 FSEvents 를 활용하여
   
 ---
 
-# 🚀 프로젝트 소개
+# 프로젝트 소개
 
 ## 1. 배경 및 목적
 
@@ -56,7 +56,7 @@ macOS의 AUL 로그를 기반으로 행위를 분석하고, 이상 징후(InfoSt
 
 ---
 
-# 🛡️ 탐지 룰 작성
+# 탐지 룰 작성
 ## 1. Mitre att&ck 매핑
 macOS 플랫폼에서 발생 가능한 MITRE ATT&CK 기술(Techniques)에 대해 직접 행위를 재현한 뒤, AUL에 남는 로그를 수집하여 각 기술을 단일 로그에 매핑하였습니다.
 
@@ -67,7 +67,7 @@ macOS 플랫폼에서 발생 가능한 MITRE ATT&CK 기술(Techniques)에 대해
 
 ---
 
-# 🔍 이상 행위 탐지 방안
+# 이상 행위 탐지 방안
 ## 1. 스코어링 기반 탐지
 본 프로젝트는 아래 두 논문을 기반으로 공격기술 단위 스코어링(Technique Scoring)을 적용합니다.
 
@@ -327,7 +327,7 @@ sequence by host.name with maxspan=20m
 
 ---
 
-# 🔧 시스템 구성 요소
+# 시스템 구성 요소
 ## 1. Agent
 - macOS 환경에서 실시간 로그를 수집하여 중앙 서버로 전송하는 구성 요소입니다.
 ### filebeat
@@ -381,7 +381,7 @@ This is a monitoring system that utilizes macOS AUL (Apple Unified Logging Syste
 
 ---
 
-# 🚀 Project Introduction
+# Project Introduction
 
 ## 1. Background and Purpose
 
@@ -407,7 +407,7 @@ An Agent/ELK-based system that analyzes behaviors based on macOS AUL logs to det
 
 ---
 
-# 🛡️ Writing Detection Rules
+# Writing Detection Rules
 ## 1. MITRE ATT&CK Mapping
 We reproduced behaviors for MITRE ATT&CK Techniques applicable to the macOS platform, collected the resulting AUL logs, and mapped each technique to a single log.
 
@@ -415,7 +415,7 @@ Additionally, we standardized the rules based on the **Sigma Rule Format** so th
 
 ---
 
-# 🔍 Anomaly Detection Methods
+# Anomaly Detection Methods
 ## 1. Scoring-Based Detection
 This project applies **Technique Scoring** based on the following two papers:
 
@@ -674,7 +674,7 @@ sequence by host.name with maxspan=20m
 
 ---
 
-# 🔧 System Components
+# System Components
 ## 1. Agent
 - A component that collects real-time logs in the macOS environment and sends them to the central server.
 ### filebeat
