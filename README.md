@@ -377,7 +377,7 @@ This is a monitoring system that utilizes macOS AUL (Apple Unified Logging Syste
 - [Project Introduction](#project-introduction)
 - [Writing Detection Rules](#writing-detection-rules)
 - [Anomaly Detection Methods](#anomaly-detection-methods)
-- [Tool Configuration](#tool-configuration)
+- [System Components](#System-Components)
 
 ---
 
