@@ -29,7 +29,7 @@
         "script": {
           "source": "if (doc['kibana.alert.rule.tags'].size() > 0) { for (tag in doc['kibana.alert.rule.tags']) { if (tag.startsWith('threat_score_1_risk_level:')) { String level = tag.substring(26); if (level.equals('CRITICAL')) emit(4); else if (level.equals('HIGH')) emit(3); else if (level.equals('MEDIUM')) emit(2); else if (level.equals('LOW')) emit(1); } } }"
         }
-      },
+      }
     }
   }
 
