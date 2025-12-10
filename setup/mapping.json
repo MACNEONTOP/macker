@@ -29,6 +29,11 @@
         "script": {
           "source": "if (doc['kibana.alert.rule.tags'].size() > 0) { for (tag in doc['kibana.alert.rule.tags']) { if (tag.startsWith('threat_score_1_risk_level:')) { String level = tag.substring(26); if (level.equals('CRITICAL')) emit(4); else if (level.equals('HIGH')) emit(3); else if (level.equals('MEDIUM')) emit(2); else if (level.equals('LOW')) emit(1); } } }"
         }
+      },
+      "host.hostname": {
+      "type": "keyword",
+      "script": {
+        "source": "String h=null;if(doc.containsKey('kibana.alert.threshold_result.terms.value')&&!doc['kibana.alert.threshold_result.terms.value'].empty){h=doc['kibana.alert.threshold_result.terms.value'][0];}if(h==null&&doc.containsKey('host.hostname')&&!doc['host.hostname'].empty){h=doc['host.hostname'].value;}if(h==null&&doc.containsKey('host.name')&&!doc['host.name'].empty){h=doc['host.name'].value;}if(h==null&&doc.containsKey('agent.name')&&!doc['agent.name'].empty){h=doc['agent.name'].value;}if(h!=null){emit(h.toLowerCase());}"
       }
     }
   }
