@@ -31,7 +31,7 @@ macOS의 AUL(Apple Unified Logging System)과 FSEvents 를 활용하여
 
 ## 1. 배경 및 목적
 
-2025년 macOS 사용자 수 (OS X + macOS)는 13.1%로 적지않은 사용자를 보이고 있다. [[출처]](https://gs.statcounter.com/os-market-share/desktop/worldwide/#yearly-2020-2025)
+2025년 macOS 사용자 수 (OS X + macOS)는 13.1%로 적지않은 사용자를 보이고 있습니다. [[출처]](https://gs.statcounter.com/os-market-share/desktop/worldwide/#yearly-2020-2025)
 
  
 macOS는 다른 운영체제에 비해 상대적으로 안전하다는 평가가 있지만, 최근 macOS를 대상으로 랜섬웨어, 스피어피싱, 공급망 공격, 스파이웨어 등 다양한 위협의 표적이 되고 있습니다. [[출처1]](https://www.infosecurity-magazine.com/news/proofpoint-frigidstealer-new-mac/)[[출처2]](https://www.infosecurity-magazine.com/news/macos-infostealer-amos-backdoor/)[[출처3]](https://www.tomshardware.com/tech-industry/cyber-security/the-first-ai-powered-ransomware-has-been-discovered-promptlock-uses-local-ai-to-foil-heuristic-detection-and-evade-api-tracking)
