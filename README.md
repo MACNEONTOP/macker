@@ -34,11 +34,11 @@ macOS의 AUL(Apple Unified Logging System)과 FSEvents 를 활용하여
 2025년 macOS 사용자 수 (OS X + macOS)는 13.1%로 적지않은 사용자를 보이고 있다. [[출처]](https://gs.statcounter.com/os-market-share/desktop/worldwide/#yearly-2020-2025)
 
  
-macOS는 다른 운영체제에 비해 상대적으로 안전하다는 평가가 있지만, 최근 macOS를 대상으로 랜섬웨어, 스피어피싱, 공급망 공격, 스파이웨어 등 다양한 위협의 표적이 되고 있다. [[출처1]](https://www.infosecurity-magazine.com/news/proofpoint-frigidstealer-new-mac/)[[출처2]](https://www.infosecurity-magazine.com/news/macos-infostealer-amos-backdoor/)[[출처3]](https://www.tomshardware.com/tech-industry/cyber-security/the-first-ai-powered-ransomware-has-been-discovered-promptlock-uses-local-ai-to-foil-heuristic-detection-and-evade-api-tracking)
+macOS는 다른 운영체제에 비해 상대적으로 안전하다는 평가가 있지만, 최근 macOS를 대상으로 랜섬웨어, 스피어피싱, 공급망 공격, 스파이웨어 등 다양한 위협의 표적이 되고 있습니다. [[출처1]](https://www.infosecurity-magazine.com/news/proofpoint-frigidstealer-new-mac/)[[출처2]](https://www.infosecurity-magazine.com/news/macos-infostealer-amos-backdoor/)[[출처3]](https://www.tomshardware.com/tech-industry/cyber-security/the-first-ai-powered-ransomware-has-been-discovered-promptlock-uses-local-ai-to-foil-heuristic-detection-and-evade-api-tracking)
  
-2016년세계 개발자 컨퍼런스 ( WWDC, Apple WorldWide Developers Conference)에서 Apple은 기존에 사용하던 syslog와 Apple이 독자적으로 개발한 ASL(Apple System Log) 을 통합한 AUL (Apple Unified Logging System) 통합 로깅 체제을 소개하였다.
+2016년세계 개발자 컨퍼런스 ( WWDC, Apple WorldWide Developers Conference)에서 Apple은 기존에 사용하던 syslog와 Apple이 독자적으로 개발한 ASL(Apple System Log) 을 통합한 AUL (Apple Unified Logging System) 통합 로깅 체제을 소개하였습니다.
 
-팀 '막내온탑'은 이러한 AUL을 활용하여 macOS 환경에서 랜섬웨어를 포함한 다양한 이상행위를 탐지할 수 있는 모니터링 도구를 개발하였다.
+팀 '막내온탑'은 이러한 AUL을 활용하여 macOS 환경에서 랜섬웨어를 포함한 다양한 이상행위를 탐지할 수 있는 모니터링 도구를 개발하였습니다.
 
 
 ## 2. 산출물
@@ -57,10 +57,10 @@ macOS의 AUL 로그를 기반으로 행위를 분석하고, 이상 징후(InfoSt
 
 # 🛡️ 탐지 룰 작성
 ## 1. Mitre att&ck 매핑
-macOS 플랫폼에서 발생 가능한 MITRE ATT&CK 기술(Techniques)에 대해 직접 행위를 재현한 뒤, AUL에 남는 로그를 수집하여 각 기술을 단일 로그에 매핑하였다.
+macOS 플랫폼에서 발생 가능한 MITRE ATT&CK 기술(Techniques)에 대해 직접 행위를 재현한 뒤, AUL에 남는 로그를 수집하여 각 기술을 단일 로그에 매핑하였습니다.
 
 또한, Sigma Rule 규칙(Sigma Rule Format)을 기반으로 탐지룰을 작성하여,
-보안 전문가들이 쉽게 읽고, 수정하고, 공유할 수 있도록 규칙 표준화를 진행하였다.
+보안 전문가들이 쉽게 읽고, 수정하고, 공유할 수 있도록 규칙 표준화를 진행하였습니다.
 
 
 
@@ -68,7 +68,7 @@ macOS 플랫폼에서 발생 가능한 MITRE ATT&CK 기술(Techniques)에 대해
 
 # 🔍 이상 행위 탐지 방안
 ## 1. 스코어링 기반 탐지
-본 프로젝트는 아래 두 논문을 기반으로 공격기술 단위 스코어링(Technique Scoring)을 적용한다.
+본 프로젝트는 아래 두 논문을 기반으로 공격기술 단위 스코어링(Technique Scoring)을 적용합니다.
 
 - 조성영, 박용우, 이건호, 최창희, 신찬호 and 이경식. (2022). MITRE ATT&CK을 이용한 APT 공격 스코어링 방법 연구. 정보보호학회논문지, 32(4), 673-689.
 - Manocha, H., Srivastava, A., Verma, C., Gupta, R., & Bansal, B. (2021). *Security Assessment Rating Framework for Enterprises using MITRE ATT&CK® Matrix*. arXiv preprint arXiv:2108.06559.
@@ -328,7 +328,7 @@ sequence by host.name with maxspan=20m
 
 # 🔧 시스템 구성 요소
 ## 1. Agent
-- macOS 환경에서 실시간 로그를 수집하여 중앙 서버로 전송하는 구성 요소이다.
+- macOS 환경에서 실시간 로그를 수집하여 중앙 서버로 전송하는 구성 요소입니다.
 ### filebeat
 > - macOS에서 생성되는 AUL(Apple Unified Log)을 실시간 수집
 > - 프로세스 단위로 필터링된 로그를 Elasticsearch로 전송하여 즉각적인 분석이 가능하도록 함
