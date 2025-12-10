@@ -619,4 +619,82 @@ A collection of Threshold and Sequence-based detection rules. Each rule generate
 **Severity**: Critical (Risk Score: 95)
 
 **Detection Conditions**:
+```
+sequence by host.name with maxspan=30m
+  [any where kibana.alert.rule.tags : "attack.initial_access" and kibana.alert.risk_score >= 70]
+  [any where kibana.alert.rule.tags : "attack.execution" and kibana.alert.risk_score >= 70]
+  [any where kibana.alert.rule.tags : "attack.persistence" and kibana.alert.risk_score >= 70]
+```
 
+**Related Tags**:
+- Malware_Pattern
+- Kill_Chain
+- High_Risk
+- attack.initial_access
+- attack.execution
+- attack.persistence
+
+---
+
+### 11. Infostealer Kill Chain Pattern
+
+**Rule ID**: `eql-infostealer-killchain-critical-002`
+
+**Description**: Detected when alerts for Discovery → Collection → Exfiltration stages occur sequentially on the same host within 20 minutes, and the risk_score for each alert is Medium or above.
+
+**Severity**: Critical (Risk Score: 98)
+
+**Detection Conditions**:
+```
+sequence by host.name with maxspan=20m
+  [any where kibana.alert.rule.tags : "attack.discovery"]
+  [any where kibana.alert.rule.tags : "attack.collection"]
+  [any where kibana.alert.rule.tags : "attack.exfiltration"]
+```
+
+**Related Tags**:
+- Infostealer_Pattern
+- Kill_Chain
+- attack.discovery
+- attack.collection
+- attack.exfiltration
+- macOS
+
+---
+
+## Risk Level Definitions
+
+| Risk Score | Severity | Description |
+|-----------|----------|------|
+| 76-100 | Critical | Immediate response required, severe security threat |
+| 56-75 | High | Investigation required with high priority |
+| 41-55 | Medium | Monitoring and review required |
+| 1-40 | Low | For reference, regular review |
+
+
+---
+
+# 🔧 System Components
+## 1. Agent
+- A component that collects real-time logs in the macOS environment and sends them to the central server.
+### filebeat
+> - Collects AUL (Apple Unified Log) generated in macOS in real-time.
+> - Sends logs filtered by process to Elasticsearch to enable immediate analysis.
+### fsevents_logger
+> - Collects macOS File System Events (FSEvents) in real-time.
+> - Provides data for ransomware detection such as file creation, modification, deletion, and permission changes.
+
+---
+
+## 2. ELK
+### Elasticsearch
+> - Stores AUL and FSEvents logs sent by the Agent.
+> - Executes Detection Rules converted based on Sigma Rules to generate anomaly detection results (alerts).
+
+### Logstash
+> - Parses logs received from the Agent into a format that Elasticsearch can understand.
+> - Acts as an intermediate processor connecting the Agent and the ELK stack.
+
+### Kibana
+> - Visualizes collected logs and detection results.
+> - Provides Dashboards.
