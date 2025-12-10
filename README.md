@@ -369,7 +369,7 @@ This is a monitoring system that utilizes macOS AUL (Apple Unified Logging Syste
 # 🔗 Deployment Links
 **ELK & Agent:** [[Link]](https://github.com/MACNEONTOP/macker)
 
-**Guidelines:** [[Link]](https://github.com/MACNEONTOP/macOS_Guideline)
+**Guidelines:** [[Link]](https://github.com/MACNEONTOP/macOS_Guideline?tab=readme-ov-file#english-version)
 
 ---
 
