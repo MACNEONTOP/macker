@@ -74,21 +74,255 @@ macOS 플랫폼에서 발생 가능한 MITRE ATT&CK 기술(Techniques)에 대해
 - 조성영, 박용우, 이건호, 최창희, 신찬호 and 이경식. (2022). MITRE ATT&CK을 이용한 APT 공격 스코어링 방법 연구. 정보보호학회논문지, 32(4), 673-689.
 - Manocha, H., Srivastava, A., Verma, C., Gupta, R., & Bansal, B. (2021). *Security Assessment Rating Framework for Enterprises using MITRE ATT&CK® Matrix*. arXiv preprint arXiv:2108.06559.
   
-## 2. 악성 코드 탐지 원리
-### 공통
-> AUL 로그와 Sigma 기반 탐지룰을 연계하여, macOS에서 발생하는 공격 흐름을 공격 단계(Initial Access → Execution → Persistence) 단위로 분석한다.
-특히 동일 호스트에서 공격 단계가 단시간에 순차적으로 발생하는 경우, 침해로 이어질 가능성이 높아 에 이를 탐지 요소로 사용한다.
+## 2. 주요 탐지 룰
+Threshold, Sequence 기반 탐지 룰 모음입니다. 각 룰은 특정 공격 패턴이나 이상 행위가 임계값을 초과할 때 알림을 생성합니다.
 
-### 랜섬웨어 탐지 원리
-> 랜섬웨어는 파일을 대량으로 암호화하는 과정에서 비정상적으로 높은 엔트로피(entropy) 를 보이며, 암호화 후 데이터 분포가 랜덤화되기 때문에 카이제곱(chi-square) 점수는 낮아지는 특징이 나타난다.
-> 
-> 본 프로젝트에서는 이러한 파일 변경 특성을 기반으로 FSEvents(File System Events)과 File Entropy를 활용해 실시간 탐지를 수행한다.
+---
 
-### InfoStealer
-> InfoStealer는 'Discovery → Collection → Exfiltration'같은 공격 패턴을 가지고 있어 이를 바탕으로 탐지를 진행한다.
+### 1. Discovery Storm (내부 정찰 급증)
 
-### 기타
-> 일정 시간 내 과도한 Discovery 탐지, 일정 시간 내 과도한 Credential Access 탐지 등 비정상 패턴 탐지를 진핸한다.
+**Rule ID**: `threshold-001-discovery-storm-v2`
+
+**설명**: 짧은 시간 내에 여러 Discovery 유형의 보안 알림이 발생했습니다. 공격자가 시스템 정보를 수집하고 있을 가능성이 있습니다.
+
+**심각도**: Medium (Risk Score: 50)
+
+**탐지 조건**:
+- 쿼리: `kibana.alert.rule.tags: "attack.discovery"`
+- Threshold: 동일 호스트에서 10회 이상 발생
+- 시간 범위: 6분 이내
+- 검사 주기: 5분
+
+**관련 태그**: 
+- attack.discovery
+- Meta_Alert
+
+---
+
+### 2. Critical Impact Sequence (치명적 영향 연속 활동)
+
+**Rule ID**: `threshold-002-impact-activity-v2`
+
+**설명**: 시스템 복구 비활성화 및 서비스 중단과 같은 Impact 유형 알림이 연속적으로 발생했습니다. 랜섬웨어의 징후일 수 있습니다.
+
+**심각도**: Critical (Risk Score: 90)
+
+**탐지 조건**:
+- 쿼리: `kibana.alert.rule.tags: "attack.impact"`
+- Threshold: 동일 호스트에서 2회 이상 발생
+- 시간 범위: 11분 이내
+- 검사 주기: 10분
+
+**관련 태그**: 
+- attack.impact
+- Ransomware_Detection
+
+---
+
+### 3. Credential Access Spike (자격증명 탈취 시도 급증)
+
+**Rule ID**: `threshold-003-credential-spike-v2`
+
+**설명**: 짧은 시간 내에 Credential Access 관련 알림이 급증했습니다.
+
+**심각도**: High (Risk Score: 70)
+
+**탐지 조건**:
+- 쿼리: `kibana.alert.rule.tags: "attack.credential_access"`
+- Threshold: 동일 호스트에서 5회 이상 발생
+- 시간 범위: 6분 이내
+- 검사 주기: 5분
+
+**관련 태그**: 
+- attack.credential_access
+- Meta_Alert
+
+---
+
+### 4. High Risk Alert Cluster (고위험 알림 클러스터)
+
+**Rule ID**: `threshold-004-high-risk-cluster-v2`
+
+**설명**: 짧은 시간 내에 CRITICAL 또는 HIGH Risk Level을 가진 여러 알림이 발생했습니다.
+
+**심각도**: High (Risk Score: 85)
+
+**탐지 조건**:
+- 쿼리: `threat_score_1_risk_level: ("CRITICAL" OR "HIGH")`
+- Threshold: 동일 호스트에서 3회 이상 발생
+- 시간 범위: 11분 이내
+- 검사 주기: 10분
+
+**관련 태그**: 
+- Risk_Based_Detection
+
+---
+
+### 5. SSH Brute Force Attack Detection (SSH 브루트 포스 공격 탐지)
+
+**Rule ID**: `threshold-005-ssh-brute-force`
+
+**설명**: SSH 브루트 포스 공격으로 인해 단일 호스트(대상 서버)에서 5분 이내에 Credential Access 알림이 5회 이상 발생했습니다. 즉각적인 대응이 필요합니다.
+
+**심각도**: High (Risk Score: 75)
+
+**탐지 조건**:
+- 쿼리: `kibana.alert.rule.tags: "attack.credential_access" AND kibana.alert.rule.name: "*Brute Force via ssh*"`
+- Threshold: 동일 호스트에서 5회 이상 발생
+- 시간 범위: 6분 이내
+- 검사 주기: 5분
+
+**관련 태그**: 
+- attack.credential_access
+- Brute_Force_SSH
+
+---
+
+### 6. Lateral Movement Indicators (측면 이동 지표)
+
+**Rule ID**: `threshold-lateral-movement-001`
+
+**설명**: 10분 이내에 동일 호스트에서 Lateral Movement 또는 Remote Services 관련 알림이 3회 이상 발생했습니다. APT 공격의 측면 이동 단계입니다.
+
+**심각도**: High (Risk Score: 80)
+
+**탐지 조건**:
+- 쿼리: `kibana.alert.rule.tags: "attack.lateral_movement"`
+- Threshold: 동일 호스트에서 3회 이상 발생
+- 시간 범위: 10분 이내
+- 검사 주기: 5분
+
+**관련 태그**: 
+- attack.lateral_movement
+
+---
+
+### 7. Privilege Escalation Attempts (권한 상승 시도)
+
+**Rule ID**: `threshold-privilege-escalation-001`
+
+**설명**: 15분 이내에 동일 호스트에서 Privilege Escalation 관련 알림이 3회 이상 발생했습니다. 반복적인 권한 상승 시도가 탐지되었습니다.
+
+**심각도**: High (Risk Score: 70)
+
+**탐지 조건**:
+- 쿼리: `kibana.alert.rule.tags: "attack.privilege_escalation"`
+- Threshold: 동일 호스트에서 3회 이상 발생
+- 시간 범위: 16분 이내
+- 검사 주기: 5분
+
+**관련 태그**: 
+- attack.privilege_escalation
+
+---
+
+### 8. Persistence Establishment Attempts (지속성 확립 시도)
+
+**Rule ID**: `threshold-persistence-attempts-001`
+
+**설명**: 20분 이내에 동일 호스트에서 Persistence 관련 알림이 3회 이상 발생했습니다. 시스템 지속성 확립 시도가 탐지되었습니다.
+
+**심각도**: High (Risk Score: 75)
+
+**탐지 조건**:
+- 쿼리: `kibana.alert.rule.tags: "attack.persistence"`
+- Threshold: 동일 호스트에서 3회 이상 발생
+- 시간 범위: 10분 이내
+- 검사 주기: 5분
+
+**관련 태그**: 
+- attack.persistence
+
+---
+
+### 9. Rapid Encryption Activity Detected (고속 암호화 활동)
+
+**Rule ID**: `ransomware-entropy-threshold-001`
+
+**설명**: 높은 엔트로피(>= 7.5)와 낮은 카이제곱 점수(<= 300)로 특징지어지는 잠재적 랜섬웨어 활동을 탐지합니다. 이 룰은 압축 파일을 제외하며, 5분 창 내에 단일 호스트에서 5회 이상의 이벤트가 발생할 때 트리거됩니다.
+
+**심각도**: Critical (Risk Score: 99)
+
+**탐지 조건**:
+- 쿼리: `fsevents.file.entropy >= 7.5 and fsevents.ransomware.chi_square <= 300`
+- Threshold: 동일 호스트에서 5회 이상 발생
+- 시간 범위: 6분 이내
+- 검사 주기: 5분
+
+**MITRE ATT&CK**:
+- Technique: Data Encrypted for Impact (T1486)
+
+**관련 태그**: 
+- Ransomware
+- Entropy
+- Chi-Square
+- macOS
+- Impact
+- T1486
+
+---
+
+
+### 10. Malware Kill Chain Pattern
+
+**Rule ID**: `eql-malware-killchain-high-risk-001`
+
+**설명**: 30분 이내에 동일 호스트에서 Initial Access → Execution → Persistence 단계 알림이 순차적으로 발생하고, 각 알림의 risk_score가 high 이상일 때 탐지됩니다.
+
+**심각도**: Critical (Risk Score: 95)
+
+**탐지 조건**:
+```
+sequence by host.name with maxspan=30m
+  [any where kibana.alert.rule.tags : "attack.initial_access" and kibana.alert.risk_score >= 70]
+  [any where kibana.alert.rule.tags : "attack.execution" and kibana.alert.risk_score >= 70]
+  [any where kibana.alert.rule.tags : "attack.persistence" and kibana.alert.risk_score >= 70]
+```
+
+**관련 태그**: 
+- Malware_Pattern
+- Kill_Chain
+- High_Risk
+- attack.initial_access
+- attack.execution
+- attack.persistence
+
+---
+
+### 11. Infostealer Kill Chain Pattern
+
+**Rule ID**: `eql-infostealer-killchain-critical-002`
+
+**설명**: 20분 이내에 동일 호스트에서 Discovery → Collection → Exfiltration 단계 알림이 순차적으로 발생하고, 각 알림의 risk_score가 medium 이상일 때 탐지됩니다.
+
+**심각도**: Critical (Risk Score: 98)
+
+**탐지 조건**:
+```
+sequence by host.name with maxspan=20m
+  [any where kibana.alert.rule.tags : "attack.discovery"]
+  [any where kibana.alert.rule.tags : "attack.collection"]
+  [any where kibana.alert.rule.tags : "attack.exfiltration"]
+```
+
+**관련 태그**: 
+- Infostealer_Pattern
+- Kill_Chain
+- attack.discovery
+- attack.collection
+- attack.exfiltration
+- macOS
+
+---
+
+## 위험도 레벨 정의
+
+| Risk Score | Severity | 설명 |
+|-----------|----------|------|
+| 76-100 | Critical | 즉각적인 대응 필요, 심각한 보안 위협 |
+| 56-75 | High | 높은 우선순위로 조사 필요 |
+| 41-55 | Medium | 모니터링 및 검토 필요 |
+| 1-40 | Low | 참고용, 정기 검토 |
 
 
 ---
