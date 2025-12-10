@@ -33,7 +33,13 @@
       "host.hostname": {
       "type": "keyword",
       "script": {
-        "source": "if (doc.containsKey('kibana.alert.threshold_result.terms.value') && doc['kibana.alert.threshold_result.terms.value'].size() >= 2) { emit(doc['kibana.alert.threshold_result.terms.value'][1]); }"
+        "source": """
+          // threshold 결과값이 있는지 확인
+          if (doc.containsKey('kibana.alert.threshold_result.terms.value') && doc['kibana.alert.threshold_result.terms.value'].size() >= 2) { 
+            // [수정 포인트] 값을 가져온 뒤 .toLowerCase()를 붙여 무조건 소문자로 변환
+            emit(doc['kibana.alert.threshold_result.terms.value'][1].toLowerCase()); 
+          }
+        """
       }
     }
   }
