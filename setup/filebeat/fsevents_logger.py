@@ -267,10 +267,6 @@ class FSEventsLogger(FileSystemEventHandler):
                 'directory': os.path.dirname(filepath),
                 'entropy': metrics['entropy']  # ✅ 기존 구조에 필드 추가
             },
-            'host': {
-                'name': os.uname().nodename,
-                'os': {'type': 'macos'}
-            },
             'ransomware': {
                 'suspicious': is_suspicious,       # ✅ 통합된 위험 판단
                 'suspicious_extension': (ext in RANSOMWARE_EXTENSIONS), # 기존 호환
