@@ -6,7 +6,7 @@
 
 # [사용 설명서 보기](https://github.com/MACNEONTOP/macker/blob/main/Macker%20%EC%82%AC%EC%9A%A9%EC%84%A4%EB%AA%85%EC%84%9C.pdf)
 
-# [English Version](#MacneOnTop-Project-(English-Version))
+[👉 Go to English Version](#macneontop-project-english-version)
 ---
 
 ## 📌 프로젝트 개요
