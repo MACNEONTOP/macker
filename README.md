@@ -367,7 +367,7 @@ sequence by host.name with maxspan=20m
 This is a monitoring system that utilizes macOS AUL (Apple Unified Logging System) and FSEvents to detect anomalous behaviors such as Ransomware and InfoStealer.
 
 # 🔗 Deployment Links
-**ELK & Agent:** [[Link]](https://github.com/MACNEONTOP/macker)
+**ELK & Agent:** [[Link]](https://github.com/MACNEONTOP/macker?tab=readme-ov-file#macneontop-project-english-version)
 
 **Guidelines:** [[Link]](https://github.com/MACNEONTOP/macOS_Guideline?tab=readme-ov-file#english-version)
 
